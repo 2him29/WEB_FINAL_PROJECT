@@ -1,0 +1,114 @@
+<section class="section fade-in"
+  style="
+    background: url('/images/background2.jpg') no-repeat center center / cover;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 15px;
+  "
+>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-lg-4">
+
+        <!-- PROFILE CARD -->
+        <div class="profile-card">
+
+          <h2>Your Profile</h2>
+
+          <form action="/profile/save" method="POST">
+
+            <div class="form-floating">
+              <input
+                type="text"
+                name="full_name"
+                id="full_name"
+                placeholder="Full Name"
+                value="<%= profile ? profile.full_name : '' %>"
+                required>
+              <label for="full_name">Full Name</label>
+            </div>
+
+            <div class="form-floating">
+              <input
+                type="text"
+                name="phone"
+                id="phone"
+                placeholder="Phone Number"
+                value="<%= profile ? profile.phone : '' %>"
+                required>
+              <label for="phone">Phone Number</label>
+            </div>
+
+            <div class="form-floating">
+              <textarea
+                name="address"
+                id="address"
+                rows="2"
+                placeholder="Address"
+                required><%= profile ? profile.address : '' %></textarea>
+              <label for="address">Address</label>
+            </div>
+
+            <div class="form-floating">
+              <input
+                type="text"
+                name="wilaya"
+                id="wilaya"
+                placeholder="Wilaya"
+                value="<%= profile ? profile.wilaya : '' %>"
+                required>
+              <label for="wilaya">Wilaya</label>
+            </div>
+
+            <div class="form-floating">
+              <input
+                type="text"
+                name="city"
+                id="city"
+                placeholder="City"
+                value="<%= profile ? profile.city : '' %>"
+                required>
+              <label for="city">City</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+              Save Profile
+            </button>
+
+          </form>
+
+          <button onclick="logout()" class="btn btn-outline-danger w-100 mt-2">
+            Logout
+          </button>
+
+        </div>
+        <!-- /PROFILE CARD -->
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% if (typeof success !== 'undefined' && success) { %>
+<script>
+  Swal.fire({
+    toast: true,
+    icon: 'success',
+    title: 'Profile saved!',
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 2000
+  });
+</script>
+<% } %>
+
+<script>
+function logout() {
+  window.location.href = "/logout";
+}
+</script>

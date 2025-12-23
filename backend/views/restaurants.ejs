@@ -1,0 +1,31 @@
+<!-- Restaurants Page -->
+<section class="section fade-in" id="restaurant">
+  <div class="container-fluid">
+    <h2 class="section-title text-center mb-5">Popular Restaurants</h2>
+    
+    <div class="row g-4">
+      <% restaurants.forEach((res) => { %>
+        <div class="col-md-4 col-sm-6">
+          <div class="restaurant-card text-center" onclick="location.href='/menu/<%= res.id %>'">
+          <img src="/images/<%= res.image %>" alt="<%= res.name %>" class="restaurant-image">
+
+
+            
+            <div class="restaurant-info mt-3">
+              <h5 class="restaurant-name"><%= res.name %></h5>
+              <p class="restaurant-description text-muted"><%= res.description %></p>
+              <p class="mb-1 text-muted"><%= res.category %></p>
+              <div class="rating mb-3">
+                <i class="fa-solid fa-star"></i> <%= res.rating %>
+              </div>
+            </div>
+
+            <div class="button-align-left">
+              <a href="/menu/<%= res.id %>" class="btn btn-primary view-btn">View Menu</a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>

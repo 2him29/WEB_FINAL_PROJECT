@@ -1,0 +1,17 @@
+<!-- Header -->
+<header class="header py-3 px-4 d-flex align-items-center justify-content-between">
+  <a href="/" class="logo">
+    <div class="logo-icon"><i class="fa-solid fa-burger"></i></div>
+    <span class="logo-text">LivraMeal</span>
+  </a>
+  <nav class="desktop-nav d-flex gap-3">
+    <a class="nav-link <%= currentPage === 'home' ? 'active' : '' %>" href="/">Home</a>
+    <a class="nav-link <%= currentPage === 'restaurants' ? 'active' : '' %>" href="/restaurants">Restaurants</a>
+    <a class="nav-link <%= currentPage === 'tracking' ? 'active' : '' %>" href="/tracking">Tracking</a>
+    <a class="nav-link <%= currentPage === 'profile' ? 'active' : '' %>" href="/profile">Profile</a>
+  </nav>
+  <button class="btn cart-btn position-relative" onclick="location.href='/cart'">
+    <i class="fa-solid fa-cart-shopping fs-4"></i>
+    <span id="cart-count" class="cart-badge"><%= cartCount || 0 %></span>
+  </button>
+</header>

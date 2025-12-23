@@ -1,0 +1,46 @@
+<!-- Order Tracking -->
+<!-- Video Background -->
+<div class="video-background">
+  <video autoplay loop muted playsinline>
+    <source src="/images/tracking.mp4" type="video/mp4">
+  </video>
+</div>
+
+<section class="section fade-in">
+  <div class="container">
+    <h2 class="section-title text-center mb-4">Order Tracking</h2>
+
+    <%
+      const normalizedStatus = orderStatus === 'pending'
+        ? 'confirmed'
+        : orderStatus;
+
+      const steps = [
+        { key: 'confirmed', label: 'Order Confirmed' },
+        { key: 'preparing', label: 'Preparing Your Meal' },
+        { key: 'delivery', label: 'Out for Delivery' },
+        { key: 'delivered', label: 'Delivered' }
+      ];
+
+      let currentIndex = steps.findIndex(s => s.key === normalizedStatus);
+      if (currentIndex === -1) currentIndex = 0;
+    %>
+
+    <p class="text-center text-muted mb-3">
+      Order #<%= orderId %>
+    </p>
+
+    <div class="timeline">
+      <% steps.forEach((step, index) => { %>
+        <div class="timeline-item">
+          <div class="timeline-dot
+            <%= index < currentIndex ? 'completed' : '' %>
+            <%= index === currentIndex ? 'active' : '' %>">
+          </div>
+          <p><%= step.label %></p>
+        </div>
+      <% }) %>
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,580 @@
+/* ========== Variables ========== */
+:root {
+    --primary: #ff6b35;
+    --secondary: #a8d5ba;
+    --accent: #ffe5d9;
+    --background: #fffbf7;
+    --text-dark: #2d2d2d;
+    --text-muted: #6b7280;
+}
+
+/* ========== Reset ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-dark);
+    margin: 0;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Optional background overlay (blur and tint) */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ========== Header ========== */
+.header {
+    background: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.logo-icon {
+    background: var(--primary);
+    padding: 10px;
+    border-radius: 12px;
+    color: white;
+}
+
+.logo-text {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.nav-link {
+    color: var(--text-dark);
+    text-decoration: none;
+    padding: 8px 16px;
+    transition: color 0.3s;
+    font-weight: 500;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--primary);
+}
+
+.cart-btn {
+    position: relative;
+    color: #333;
+}
+
+.cart-icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ========== Hero Section ========== */
+.hero-section {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0;
+
+    /* Background image settings */
+    background-image: url('/images/background2.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;      /* Makes it fully cover */
+    background-position: center; /* Always centered */
+    background-attachment: scroll; /* FIXED: removed invalid value */
+}
+
+@supports (-webkit-touch-callout: none) {
+    .hero-section {
+        background-attachment: scroll !important;
+        background-size: cover !important;
+    }
+}
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 107, 53, 0.25); /* semi-transparent orange */
+    backdrop-filter: blur(4px);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+}
+
+.hero-title {
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+/* ========== Search Box ========== */
+.search-box {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-box input {
+    padding: 18px 20px 18px 50px;
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    font-size: 1rem;
+}
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+/* ========== Category Cards ========== */
+.category-card {
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 150px;
+    position: relative;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.category-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.category-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    padding: 20px;
+    color: white;
+    font-weight: 600;
+}
+
+/* ========== Restaurant Card ========== */
+.restaurant-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    width: 100%;
+    padding-bottom: 12px;
+}
+
+.restaurant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.restaurant-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.restaurant-info {
+    padding: 20px;
+}
+
+.restaurant-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.restaurant-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+
+.rating {
+    color: #fbbf24;
+}
+
+.badge-custom {
+    background: var(--accent);
+    color: var(--text-dark);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+/* ========== Menu Item Card ========== */
+.menu-item {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s;
+}
+
+.menu-item:hover {
+    transform: translateY(-3px);
+}
+
+.menu-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* ========== Cart ========== */
+.cart-item {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--primary);
+    background: white;
+    color: var(--primary);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.quantity-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* ========== Order Tracking ========== */
+.timeline {
+    position: relative;
+    padding-left: 40px;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 30px;
+}
+
+.timeline-item:before {
+    content: '';
+    position: absolute;
+    left: -29px;
+    top: 8px;
+    width: 2px;
+    height: 100%;
+    background: #e5e7eb;
+}
+
+.timeline-item:last-child:before {
+    display: none;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -40px;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #e5e7eb;
+}
+
+.timeline-dot.active {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.timeline-dot.completed {
+    background: var(--secondary);
+    border-color: var(--secondary);
+}
+
+/* ========== Buttons ========== */
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.restaurant-card .btn-primary {
+    padding: 6px 16px;  /* Reduced from 10px 20px */
+    font-size: 0.9rem; 
+    min-width: 100px; 
+    margin-top: -10px;
+}
+.button-align-left {
+    /* Overrides the inherited 'text-align: center' from the parent card */
+    text-align: left;
+    /* Adds horizontal padding (20px) to match the internal spacing of the card,
+       and vertical padding (10px top, 20px bottom) */
+    padding: 10px 20px 20px;
+    margin-top: -45px; /* Slightly less negative margin to align better */
+}
+
+.btn-primary:hover {
+    background: #ff5722;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-weight: 600;
+    background: white;
+    transition: all 0.3s;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* ========== Sections ========== */
+.section {
+    padding: 60px 0;
+}
+
+.section-title {
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ========== Toast ========== */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.custom-toast {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(400px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-success {
+    border-left: 4px solid var(--secondary);
+}
+
+/* ========== Page Fade Animation ========== */
+.fade-in {
+    animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== Profile ========== */
+/* ===== Floating Label Form ===== */
+.profile-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    max-width: 400px;
+    width: 100%;
+    padding: 40px 30px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Form title */
+.profile-card h2 {
+    text-align: center;
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+/* Floating label container */
+.form-floating {
+    position: relative;
+}
+
+.form-floating input,
+.form-floating textarea {
+    width: 100%;
+    padding: 14px 12px 14px 12px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    background: transparent;
+    outline: none;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.form-floating input:focus,
+.form-floating textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 6px rgba(0,123,255,0.25);
+}
+
+.form-floating label {
+    position: absolute;
+    left: 12px;
+    top: 14px;
+    background: rgba(255,255,255,0.95);
+    padding: 0 5px;
+    color: #888;
+    font-size: 16px;
+    pointer-events: none;
+    transition: 0.2s ease all;
+}
+
+/* Move label on focus or if input has value */
+.form-floating input:focus + label,
+.form-floating input:not(:placeholder-shown) + label,
+.form-floating textarea:focus + label,
+.form-floating textarea:not(:placeholder-shown) + label {
+    top: -10px;
+    left: 10px;
+    font-size: 12px;
+    color: var(--primary);
+}
+
+/* Buttons */
+.profile-card button {
+    border-radius: 12px;
+    padding: 12px 0;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.profile-card button:hover {
+    opacity: 0.9;
+}
+
+.video-background {
+  position: absolute; /* changed from fixed */
+  top: 70px;          /* start below nav */
+  left: 0;
+  width: 100%;
+  height: calc(100% - 70px); /* fill remaining height */
+  overflow: hidden;
+  z-index: -1;
+}
+
+.video-background video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.4);
+}
+
+
+.section {
+  position: relative;
+  z-index: 1;
+}
+
+/* ========== Responsive Tweaks ========== */
+@media (max-width: 992px) {
+    .restaurant-card img { height: 160px; }
+}
+
+@media (max-width: 768px) {
+    .hero-section { padding: 50px 0; }
+    .restaurant-card { margin-bottom: 20px; }
+    .category-card { height: 120px; }
+    .hero-title { font-size: 1.8rem; }
+    .desktop-nav { display: none; }
+} 
