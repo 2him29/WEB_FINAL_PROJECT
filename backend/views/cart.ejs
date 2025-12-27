@@ -18,9 +18,9 @@
                             <p class="text-muted mb-0">$<%= item.price.toFixed(2) %></p>
                         </div>
                         <div class="quantity-control">
-                            <button class="quantity-btn" onclick="changeQty(<%= index %>, -1)">-</button>
+                            <button class="quantity-btn" data-index="<%= index %>" data-delta="-1" onclick="changeQty(parseInt(this.dataset.index), parseInt(this.dataset.delta))">-</button>
                             <span class="qty"><%= item.qty %></span>
-                            <button class="quantity-btn" onclick="changeQty(<%= index %>, 1)">+</button>
+                            <button class="quantity-btn" data-index="<%= index %>" data-delta="1" onclick="changeQty(parseInt(this.dataset.index), parseInt(this.dataset.delta))">+</button>
                         </div>
                     </div>
                 <% }); %>

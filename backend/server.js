@@ -38,7 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: "livrameal_secret_key",
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: true
 }));
 
 app.use("/auth", authRoutes);
@@ -113,12 +113,14 @@ app.get('/menu/:id', async (req, res) => {
   }
 });
 
+// NEW: Added route for the cart page (renders cart.ejs within layout)
 app.get('/cart', (req, res) => {
-  const cart = req.session.cart || [];
   res.render('layout', {
     currentPage: 'cart',
-    cart,
-    cartCount: cart.reduce((s, i) => s + i.qty, 0)
+    cart: req.session.cart || [],
+    cartCount: req.session.cart
+      ? req.session.cart.reduce((s, i) => s + i.qty, 0)
+      : 0
   });
 });
 
@@ -229,6 +231,18 @@ app.post('/api/cart/add', (req, res) => {
     success: true,
     cartCount: req.session.cart.reduce((s, i) => s + i.qty, 0)
   });
+});
+
+app.get('/api/cart/count', (req, res) => {
+  const cart = req.session.cart || [];
+  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
+  res.json({ cartCount });
+});
+
+// NEW: Added route to fetch the full cart data (required for updateCartDisplay in main.js)
+app.get('/api/cart', (req, res) => {
+  const cart = req.session.cart || [];
+  res.json({ cart });
 });
 
 app.post('/api/cart/update', (req, res) => {

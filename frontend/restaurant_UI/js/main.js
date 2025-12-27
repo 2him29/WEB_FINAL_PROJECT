@@ -11,7 +11,7 @@ async function updateCartCount(count) {
 
   if (typeof count === 'undefined') {
     try {
-      const res = await fetch('/api/cart/count');
+      const res = await fetch('http://localhost:3000/api/cart/count');
       const data = await res.json();
       count = data.cartCount || 0;
     } catch (err) {
@@ -28,7 +28,7 @@ async function updateCartCount(count) {
 // Initiates checkout via server API (POST).
 async function checkout() {
   try {
-    const res = await fetch('/api/checkout', {
+    const res = await fetch('http://localhost:3000/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     });
@@ -82,7 +82,7 @@ function showPage(page) {
 // ======== CART SYSTEM ========
 // Adds item to session cart via API POST request.
 function addToCart(name, price, image) {
-  fetch('/api/cart/add', {
+  fetch('http://localhost:3000/api/cart/add', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, price, image }),
@@ -104,7 +104,7 @@ function addToCart(name, price, image) {
 
 // Changes item quantity or removes item via API POST request.
 function changeQty(index, amount) {
-  fetch('/api/cart/update', {
+  fetch('http://localhost:3000/api/cart/update', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ index, amount }),
@@ -120,12 +120,14 @@ function changeQty(index, amount) {
 }
 
 // Fetches current cart data and dynamically renders the list and totals.
+// UPDATED: Added try-catch for better error handling on fetch failures
 async function updateCartDisplay() {
   const container = document.getElementById('cart-items-container');
   if (!container) return;
 
   try {
-    const res = await fetch('/api/cart');
+    const res = await fetch('http://localhost:3000/api/cart');
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
     const cart = data.cart;
 
@@ -188,7 +190,8 @@ async function updateCartDisplay() {
     updateCartCount(totalQuantity);
   } catch (err) {
     console.error('Error fetching cart:', err);
-    container.innerHTML = '<p class="text-center text-muted">Error loading cart.</p>';
+    container.innerHTML = '<p class="text-center text-muted">Error loading cart. Please try again.</p>';
+    showToast('Error loading cart', 'error');
   }
 }
 
