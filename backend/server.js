@@ -128,23 +128,81 @@ app.get('/cart', (req, res) => {
 // ORDER TRACKING (PER ORDER)
 // ------------------------------
 
-app.get('/tracking/:orderId', async (req, res) => {
+// API endpoint for real-time order status updates
+app.get('/api/tracking/:orderId', async (req, res) => {
   const { orderId } = req.params;
+  const userId = req.session.userId; // Get current user ID (null if not logged in)
 
   try {
     const result = await query(
-      "SELECT status FROM orders WHERE id = ?",
+      "SELECT user_id, status, total_amount, created_at FROM orders WHERE id = ?",
       [orderId]
     );
 
     if (!result.length) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    const order = result[0];
+
+    // Authorization check: same logic as tracking route
+    if (order.user_id !== null && order.user_id !== userId) {
+      return res.status(403).json({ error: "Unauthorized access" });
+    }
+
+    res.json({
+      orderId: parseInt(orderId),
+      status: order.status,
+      totalAmount: order.total_amount,
+      createdAt: order.created_at
+    });
+
+  } catch (err) {
+    console.error("TRACKING API ERROR:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+app.get('/tracking/:orderId', async (req, res) => {
+  const { orderId } = req.params;
+  const userId = req.session.userId; // Get current user ID (null if not logged in)
+
+  try {
+    const orderResult = await query(
+      "SELECT id, user_id, total_amount, status, created_at FROM orders WHERE id = ?",
+      [orderId]
+    );
+
+    if (!orderResult.length) {
       return res.status(404).send("Order not found");
     }
+
+    const order = orderResult[0];
+
+    // Authorization check:
+    // - Allow if order has no user_id (guest checkout) - for backward compatibility
+    // - Allow if current user owns the order
+    // - Deny if order belongs to another user
+    if (order.user_id !== null && order.user_id !== userId) {
+      return res.status(403).send("You don't have permission to view this order");
+    }
+
+    // Fetch order items with menu item details
+    const orderItems = await query(
+      `SELECT oi.quantity, oi.price, mi.name, mi.image 
+       FROM order_items oi 
+       LEFT JOIN menu_items mi ON oi.menu_item_id = mi.id 
+       WHERE oi.order_id = ?`,
+      [orderId]
+    );
 
     res.render('layout', {
       currentPage: 'tracking',
       orderId,
-      orderStatus: result[0].status,
+      orderStatus: order.status,
+      orderTotal: order.total_amount,
+      orderDate: order.created_at,
+      orderItems: orderItems || [],
       cartCount: req.session.cart
         ? req.session.cart.reduce((s, i) => s + i.qty, 0)
         : 0
@@ -266,15 +324,19 @@ app.post('/api/checkout', async (req, res) => {
     return res.json({ success: false, message: "Cart is empty" });
   }
 
+  // Get user ID from session (null if not logged in - allows guest checkout)
+  const userId = req.session.userId || null;
+
   try {
     const totalAmount = cart.reduce(
       (s, i) => s + i.price * i.qty,
       0
     );
 
+    // Include user_id when creating order
     const order = await query(
-      "INSERT INTO orders (total_amount, status) VALUES (?, ?)",
-      [totalAmount, 'confirmed']
+      "INSERT INTO orders (user_id, total_amount, status) VALUES (?, ?, ?)",
+      [userId, totalAmount, 'confirmed']
     );
 
     const orderId = order.insertId;

@@ -37,9 +37,9 @@ async function checkout() {
 
     if (data.success) {
       showToast('Order placed successfully!', 'success');
-      // Optionally redirect to tracking or home after a short delay
+      // Redirect to tracking page with order ID
       setTimeout(() => {
-        window.location.href = '/tracking';  // or another page
+        window.location.href = data.redirect || '/tracking';
       }, 1200);
     } else {
       showToast(data.message || 'Checkout failed', 'error');
@@ -136,11 +136,23 @@ async function updateCartDisplay() {
 
     if (!cart || cart.length === 0) {
       container.innerHTML = `
-        <p class="text-center text-muted">Your cart is empty.</p>
-        <div id="cart-summary" class="cart-total text-center mt-4">
-          <h5>Total: $<span id="total-price">0.00</span></h5>
-          <p class="text-muted">Quantity: <span id="total-quantity">0</span> items</p>
-          <button class="btn btn-primary mt-3" onclick="checkout()" disabled>Checkout</button>
+        <div class="text-center py-5">
+          <i class="fa-solid fa-cart-shopping fa-3x text-muted mb-3"></i>
+          <p class="text-muted mb-4">Your cart is empty.</p>
+          <a href="/restaurants" class="btn" style="background:#ff6b35; color: white;">
+            Browse Restaurants
+          </a>
+        </div>
+        <div id="cart-summary" class="border-top pt-4 mt-4 d-none">
+          <div class="d-flex justify-content-between mb-3">
+            <span class="text-muted">Quantity:</span>
+            <strong><span id="total-quantity">0</span> items</strong>
+          </div>
+          <div class="d-flex justify-content-between mb-4">
+            <span class="fw-bold fs-5">Total:</span>
+            <strong class="fs-5 text-primary">$<span id="total-price">0.00</span></strong>
+          </div>
+          <button class="btn w-100 text-white" style="background:#ff6b35;" onclick="checkout()" disabled>Checkout</button>
         </div>
       `;
       updateCartCount(0);
@@ -152,37 +164,51 @@ async function updateCartDisplay() {
         totalPrice += item.price * item.qty;
         totalQuantity += item.qty;
         return `
-          <div class="cart-item d-flex justify-content-between align-items-center" data-index="${index}">
-            <div>
-              <h6>${item.name}</h6>
-              <p class="text-muted mb-0">$${item.price.toFixed(2)}</p>
+          <div class="cart-item-card d-flex justify-content-between align-items-center mb-3 p-3 border rounded" data-index="${index}">
+            <div class="flex-grow-1">
+              <h6 class="mb-1 fw-semibold">${item.name}</h6>
+              <p class="text-muted mb-0">$${item.price.toFixed(2)} each</p>
             </div>
-            <div class="quantity-control">
-              <button class="quantity-btn" onclick="changeQty(${index}, -1)">-</button>
-              <span class="qty">${item.qty}</span>
-              <button class="quantity-btn" onclick="changeQty(${index}, 1)">+</button>
+            <div class="quantity-control d-flex align-items-center gap-2">
+              <button class="quantity-btn" data-index="${index}" data-delta="-1" onclick="changeQty(parseInt(this.dataset.index), parseInt(this.dataset.delta))">-</button>
+              <span class="qty fw-bold">${item.qty}</span>
+              <button class="quantity-btn" data-index="${index}" data-delta="1" onclick="changeQty(parseInt(this.dataset.index), parseInt(this.dataset.delta))">+</button>
             </div>
           </div>
         `;
       })
       .join('');
       
-    container.innerHTML = cartItemsHtml;
+    container.innerHTML = `
+      <div class="mb-4">
+        ${cartItemsHtml}
+      </div>
+    `;
 
     // Update existing total/quantity spans if present on the page.
     const priceSpan = document.getElementById('total-price');
     const qtySpan = document.getElementById('total-quantity');
+    const summaryDiv = document.getElementById('cart-summary');
     
     if (priceSpan && qtySpan) {
         priceSpan.textContent = totalPrice.toFixed(2);
         qtySpan.textContent = totalQuantity;
+        if (summaryDiv) {
+          summaryDiv.classList.remove('d-none');
+        }
     } else {
         // Fallback for full client-side rendering if EJS didn't pre-render the summary
         container.innerHTML += `
-            <div id="cart-summary" class="cart-total text-center mt-4">
-                <h5>Total: $<span id="total-price">${totalPrice.toFixed(2)}</span></h5>
-                <p class="text-muted">Quantity: <span id="total-quantity">${totalQuantity}</span> items</p>
-                <button class="btn btn-primary mt-3" onclick="checkout()">Checkout</button>
+            <div id="cart-summary" class="border-top pt-4 mt-4">
+                <div class="d-flex justify-content-between mb-3">
+                  <span class="text-muted">Quantity:</span>
+                  <strong><span id="total-quantity">${totalQuantity}</span> items</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-4">
+                  <span class="fw-bold fs-5">Total:</span>
+                  <strong class="fs-5 text-primary">$<span id="total-price">${totalPrice.toFixed(2)}</span></strong>
+                </div>
+                <button class="btn w-100 text-white" style="background:#ff6b35;" onclick="checkout()">Checkout</button>
             </div>
         `;
     }

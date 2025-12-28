@@ -1,88 +1,90 @@
-<section class="section fade-in"
-  style="
-    background: url('/images/background2.jpg') no-repeat center center / cover;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 15px;
-  "
->
+<section class="section fade-in" style="min-height: calc(100vh - 70px); display: flex; align-items: center; justify-content: center; padding: 40px 15px; background: #f8f9fa;">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-5 col-lg-4">
 
         <!-- PROFILE CARD -->
-        <div class="profile-card">
+        <div class="card shadow-sm border-0" style="background: white; border-radius: 0;">
+          <div class="card-body p-4" style="background: white;">
+            <h2 class="text-center mb-4" style="color:#ff6b35; font-weight: 600;">Your Profile</h2>
 
-          <h2>Your Profile</h2>
+            <% if (typeof success !== 'undefined' && success) { %>
+              <div class="alert alert-success py-2 mb-3 text-center" role="alert">
+                Profile saved successfully!
+              </div>
+            <% } %>
 
-          <form action="/profile/save" method="POST">
+            <form action="/profile/save" method="POST">
 
-            <div class="form-floating">
-              <input
-                type="text"
-                name="full_name"
-                id="full_name"
-                placeholder="Full Name"
-                value="<%= profile ? profile.full_name : '' %>"
-                required>
-              <label for="full_name">Full Name</label>
-            </div>
+              <div class="mb-3">
+                <label for="full_name" class="form-label">Full Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="full_name"
+                  id="full_name"
+                  placeholder="Enter your full name"
+                  value="<%= profile ? profile.full_name : '' %>"
+                  required>
+              </div>
 
-            <div class="form-floating">
-              <input
-                type="text"
-                name="phone"
-                id="phone"
-                placeholder="Phone Number"
-                value="<%= profile ? profile.phone : '' %>"
-                required>
-              <label for="phone">Phone Number</label>
-            </div>
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="phone"
+                  id="phone"
+                  placeholder="Enter your phone number"
+                  value="<%= profile ? profile.phone : '' %>"
+                  required>
+              </div>
 
-            <div class="form-floating">
-              <textarea
-                name="address"
-                id="address"
-                rows="2"
-                placeholder="Address"
-                required><%= profile ? profile.address : '' %></textarea>
-              <label for="address">Address</label>
-            </div>
+              <div class="mb-3">
+                <label for="address" class="form-label">Address</label>
+                <textarea
+                  class="form-control"
+                  name="address"
+                  id="address"
+                  rows="2"
+                  placeholder="Enter your address"
+                  required><%= profile ? profile.address : '' %></textarea>
+              </div>
 
-            <div class="form-floating">
-              <input
-                type="text"
-                name="wilaya"
-                id="wilaya"
-                placeholder="Wilaya"
-                value="<%= profile ? profile.wilaya : '' %>"
-                required>
-              <label for="wilaya">Wilaya</label>
-            </div>
+              <div class="mb-3">
+                <label for="wilaya" class="form-label">Wilaya</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="wilaya"
+                  id="wilaya"
+                  placeholder="Enter your wilaya"
+                  value="<%= profile ? profile.wilaya : '' %>"
+                  required>
+              </div>
 
-            <div class="form-floating">
-              <input
-                type="text"
-                name="city"
-                id="city"
-                placeholder="City"
-                value="<%= profile ? profile.city : '' %>"
-                required>
-              <label for="city">City</label>
-            </div>
+              <div class="mb-3">
+                <label for="city" class="form-label">City</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="city"
+                  id="city"
+                  placeholder="Enter your city"
+                  value="<%= profile ? profile.city : '' %>"
+                  required>
+              </div>
 
-            <button type="submit" class="btn btn-primary w-100">
-              Save Profile
+              <button type="submit" class="btn w-100 text-white" style="background:#ff6b35;">
+                Save Profile
+              </button>
+            </form>
+
+            <button onclick="logout()" class="btn btn-outline-danger w-100 mt-3">
+              Logout
             </button>
 
-          </form>
-
-          <button onclick="logout()" class="btn btn-outline-danger w-100 mt-2">
-            Logout
-          </button>
-
+          </div>
         </div>
         <!-- /PROFILE CARD -->
 
@@ -90,22 +92,6 @@
     </div>
   </div>
 </section>
-
-<!-- SweetAlert -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<% if (typeof success !== 'undefined' && success) { %>
-<script>
-  Swal.fire({
-    toast: true,
-    icon: 'success',
-    title: 'Profile saved!',
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 2000
-  });
-</script>
-<% } %>
 
 <script>
 function logout() {
