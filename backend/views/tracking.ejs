@@ -1,5 +1,3 @@
-<!-- Order Tracking -->
-<!-- Video Background -->
 <div class="video-background">
   <video autoplay loop muted playsinline>
     <source src="/images/tracking.mp4" type="video/mp4">
@@ -12,23 +10,18 @@
       <div class="col-lg-8">
         <h2 class="section-title text-center mb-4">Order Tracking</h2>
 
-        <%
-          const normalizedStatus = orderStatus === 'pending'
-            ? 'confirmed'
-            : orderStatus;
-
+        <% 
+          const normalizedStatus = orderStatus === 'pending' ? 'confirmed' : orderStatus;
           const steps = [
             { key: 'confirmed', label: 'Order Confirmed', icon: 'fa-check-circle' },
             { key: 'preparing', label: 'Preparing Your Meal', icon: 'fa-utensils' },
             { key: 'delivery', label: 'Out for Delivery', icon: 'fa-truck' },
             { key: 'delivered', label: 'Delivered', icon: 'fa-check-double' }
           ];
-
           let currentIndex = steps.findIndex(s => s.key === normalizedStatus);
           if (currentIndex === -1) currentIndex = 0;
         %>
 
-        <!-- Order Summary Card -->
         <div class="tracking-card mb-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
@@ -43,39 +36,15 @@
               <small class="text-muted">Total Amount</small>
             </div>
           </div>
-
-          <!-- Order Items -->
-          <% if (orderItems && orderItems.length > 0) { %>
-            <div class="order-items-summary">
-              <h6 class="mb-3">Order Items:</h6>
-              <div class="order-items-list">
-                <% orderItems.forEach(item => { %>
-                  <div class="order-item-row d-flex justify-content-between align-items-center mb-2">
-                    <div class="d-flex align-items-center">
-                      <% if (item.image) { %>
-                        <img src="/images/<%= item.image %>" alt="<%= item.name || 'Item' %>" class="order-item-thumb">
-                      <% } %>
-                      <div class="ms-2">
-                        <span class="fw-medium"><%= item.name || 'Item' %></span>
-                        <small class="text-muted d-block">Qty: <%= item.quantity %></small>
-                      </div>
-                    </div>
-                    <span class="text-muted">$<%= (parseFloat(item.price) * parseInt(item.quantity)).toFixed(2) %></span>
-                  </div>
-                <% }) %>
-              </div>
-            </div>
-          <% } %>
         </div>
 
-        <!-- Status Timeline -->
-        <div class="tracking-card" data-order-id="<%= orderId %>" data-order-status="<%= orderStatus %>">
+        <div class="tracking-card" id="tracking-container" data-order-id="<%= orderId %>">
           <h5 class="mb-4">Order Status</h5>
-          <div class="timeline">
+          <div class="timeline" id="status-timeline">
             <% steps.forEach((step, index) => { %>
-              <div class="timeline-item">
-                <div class="timeline-dot
-                  <%= index < currentIndex ? 'completed' : '' %>
+              <div class="timeline-item" data-step-key="<%= step.key %>">
+                <div class="timeline-dot 
+                  <%= index < currentIndex ? 'completed' : '' %> 
                   <%= index === currentIndex ? 'active' : '' %>">
                   <i class="fa-solid <%= step.icon %>"></i>
                 </div>
@@ -83,77 +52,80 @@
                   <p class="timeline-label <%= index === currentIndex ? 'active-label' : '' %>">
                     <%= step.label %>
                   </p>
-                  <% if (index === currentIndex && normalizedStatus !== 'delivered') { %>
-                    <small class="text-muted status-update-indicator">
-                      <i class="fa-solid fa-circle-notch fa-spin"></i> 
-                      <span id="last-update">Checking for updates...</span>
-                    </small>
-                  <% } %>
                 </div>
               </div>
             <% }) %>
           </div>
+          
+          <div class="text-center mt-3">
+             <small class="text-muted">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> 
+                <span id="last-update">Syncing status...</span>
+             </small>
+          </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="text-center mt-4">
           <a href="/" class="btn btn-outline-primary me-2">
             <i class="fa-solid fa-home"></i> Back to Home
           </a>
-          <button onclick="location.reload()" class="btn btn-outline-primary">
-            <i class="fa-solid fa-refresh"></i> Refresh Status
-          </button>
         </div>
-
       </div>
     </div>
   </div>
 </section>
 
 <script>
-  // Auto-refresh order status every 10 seconds if not delivered
-  (function() {
-    // Get data from data attributes to avoid EJS parsing issues in linter
-    var trackingCard = document.querySelector('[data-order-id]');
-    var orderId = parseInt(trackingCard ? trackingCard.getAttribute('data-order-id') : '0');
-    var rawStatus = trackingCard ? trackingCard.getAttribute('data-order-status') : '';
-    var currentStatus = rawStatus === 'pending' ? 'confirmed' : rawStatus;
-    var refreshInterval;
+(function() {
+    const orderId = document.getElementById('tracking-container').getAttribute('data-order-id');
+    const stepKeys = ['confirmed', 'preparing', 'delivery', 'delivered'];
+    const timelineItems = document.querySelectorAll('.timeline-item');
 
-    if (currentStatus !== 'delivered') {
-      refreshInterval = setInterval(async function() {
-        try {
-          var response = await fetch('/api/tracking/' + orderId);
-          var data = await response.json();
-          
-          // Normalize the status from API response
-          var apiStatus = data.status === 'pending' ? 'confirmed' : data.status;
-          
-          if (apiStatus && apiStatus !== currentStatus) {
-            // Status changed, reload page to show new status
-            clearInterval(refreshInterval);
-            location.reload();
-          } else {
-            // Update last check time
-            var lastUpdateEl = document.getElementById('last-update');
-            if (lastUpdateEl) {
-              lastUpdateEl.textContent = 'Last checked: ' + new Date().toLocaleTimeString();
+    function updateUI(status) {
+        // Normalize status
+        const currentStatus = status === 'pending' ? 'confirmed' : status;
+        const currentIndex = stepKeys.indexOf(currentStatus);
+
+        timelineItems.forEach((item, i) => {
+            const dot = item.querySelector('.timeline-dot');
+            const label = item.querySelector('.timeline-label');
+            
+            // Remove all states first
+            dot.classList.remove('completed', 'active');
+            label.classList.remove('active-label');
+
+            if (i < currentIndex) {
+                dot.classList.add('completed');
+            } else if (i === currentIndex) {
+                dot.classList.add('active');
+                label.classList.add('active-label');
             }
-          }
-        } catch (error) {
-          console.error('Error checking order status:', error);
-        }
-      }, 10000); // Check every 10 seconds
+        });
 
-      // Clear interval when page is hidden
-      document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-          clearInterval(refreshInterval);
-        } else {
-          // Restart when page becomes visible
-          location.reload();
+        document.getElementById('last-update').textContent = 'Last checked: ' + new Date().toLocaleTimeString();
+        
+        // Stop refresh if delivered
+        if (currentStatus === 'delivered') {
+            clearInterval(refreshInterval);
+            document.querySelector('.fa-circle-notch').style.display = 'none';
+            document.getElementById('last-update').textContent = 'Order Delivered!';
         }
-      });
     }
-  })();
+
+    async function fetchStatus() {
+        try {
+            const res = await fetch('/api/tracking/' + orderId);
+            const data = await res.json();
+            updateUI(data.status);
+        } catch (err) {
+            console.error("Tracking fetch failed", err);
+        }
+    }
+
+    // Auto refresh every 5 seconds
+    const refreshInterval = setInterval(fetchStatus, 5000);
+
+    // Initial check
+    fetchStatus();
+})();
 </script>

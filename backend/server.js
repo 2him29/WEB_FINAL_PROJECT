@@ -131,11 +131,10 @@ app.get('/cart', (req, res) => {
 // API endpoint for real-time order status updates
 app.get('/api/tracking/:orderId', async (req, res) => {
   const { orderId } = req.params;
-  const userId = req.session.userId; // Get current user ID (null if not logged in)
 
   try {
     const result = await query(
-      "SELECT user_id, status, total_amount, created_at FROM orders WHERE id = ?",
+      "SELECT status, created_at FROM orders WHERE id = ?",
       [orderId]
     );
 
@@ -144,24 +143,24 @@ app.get('/api/tracking/:orderId', async (req, res) => {
     }
 
     const order = result[0];
+    const createdAt = new Date(order.created_at);
+    const now = new Date();
+    const diffSeconds = Math.floor((now - createdAt) / 1000);
 
-    // Authorization check: same logic as tracking route
-    if (order.user_id !== null && order.user_id !== userId) {
-      return res.status(403).json({ error: "Unauthorized access" });
-    }
+    let status = 'confirmed';
 
-    res.json({
-      orderId: parseInt(orderId),
-      status: order.status,
-      totalAmount: order.total_amount,
-      createdAt: order.created_at
-    });
+    if (diffSeconds >= 25) status = 'delivered';
+    else if (diffSeconds >= 15) status = 'delivery';
+    else if (diffSeconds >= 5) status = 'preparing';
+
+    res.json({ status });
 
   } catch (err) {
-    console.error("TRACKING API ERROR:", err);
-    res.status(500).json({ error: "Database error" });
+    console.error(err);
+    res.status(500).json({ error: "Tracking error" });
   }
 });
+
 
 app.get('/tracking/:orderId', async (req, res) => {
   const { orderId } = req.params;
